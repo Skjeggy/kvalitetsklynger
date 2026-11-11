@@ -27,7 +27,7 @@ npm run preview    # kjører dist/ slik Cloudflare gjør (wrangler dev)
    - **Root directory:** `/`
    - **Produksjonsgren:** `main`
 4. Node-versjonen leses fra `.node-version` (24). Andre miljøvariabler trengs ikke.
-5. Etter første deploy ligger nettstedet på `kvalitetsklynger.<konto>.workers.dev`. Eget domene legges til under
+5. Etter første deploy ligger nettstedet på `kvalitetsklynger.sondrerekdal.workers.dev`. Eget domene legges til under
    **Settings → Domains & Routes**. Oppdater da `nettadresse` i `site.config.mjs`.
 
 Output-mappen er `dist/`. Den er angitt i `wrangler.jsonc` (`assets.directory`), og det trengs ingen Worker-kode.
@@ -36,10 +36,10 @@ Output-mappen er `dist/`. Den er angitt i `wrangler.jsonc` (`assets.directory`),
 ## Gjenstår før publisering
 
 - [ ] E-postadresse: `epost` i `site.config.mjs` (nå `[E-POSTADRESSE]`)
-- [ ] Domene: `nettadresse` i `site.config.mjs` (nå `kvalitetsklynger.example`)
+- [ ] Eget domene (valgfritt): nå brukes `kvalitetsklynger.sondrerekdal.workers.dev`. Ved nytt domene: legg det til i Cloudflare og oppdater `nettadresse` i `site.config.mjs`
 - [ ] Første ekte pakker. Slett deretter `content/pakker/eksempelpakke.md` og `public/materiell/eksempelpakke/`
 - [ ] Fyll inn `[FYLL INN]` på «Slik fungerer det» (gruppestørrelse, møtehyppighet, klyngelederrollen, hvem som står bak)
 - [ ] Kort beskrivelse av Bærekraftig legekontor i `RESSURSER.md`
 - [ ] Bekreft med KIAP, SKIL og Bærekraftig legekontor at de kan nevnes som samarbeidspartnere
 - [ ] Logo: gjør teksten i `public/logo.svg` om til konturer, f.eks. i Inkscape (nettstedet bruker HTML-tekst, så dette gjelder bare SVG-filen)
-- [ ] Opprett Git-repo og koble det til Cloudflare (se over)
+- [x] Git-repo (github.com/Skjeggy/kvalitetsklynger) koblet til Cloudflare Workers

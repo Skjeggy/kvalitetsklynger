@@ -10,8 +10,8 @@ export const site = {
   epost: "[E-POSTADRESSE]",
 
   // Full adresse til nettstedet, uten skråstrek til slutt. Brukes i sidekart,
-  // robots.txt og Open Graph. [FYLL INN] når domenet er bestemt.
-  nettadresse: "https://kvalitetsklynger.example",
+  // robots.txt og Open Graph. Byttes hvis dere får eget domene.
+  nettadresse: "https://kvalitetsklynger.sondrerekdal.workers.dev",
 };
 
 // Gyldige fagområder. Rekkefølgen her er rekkefølgen i filteret.
