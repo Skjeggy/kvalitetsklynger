@@ -1,0 +1,1 @@
+Plassholderfil for eksempelpakken. Slett mappen når eksempelpakken fjernes.

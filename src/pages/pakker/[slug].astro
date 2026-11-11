@@ -1,0 +1,133 @@
+---
+import { statSync } from "node:fs";
+import { join } from "node:path";
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { dato, moter, filformat, filstorrelse } from "../../lib/format";
+import { meldPa, merInfo } from "../../lib/epost";
+
+export async function getStaticPaths() {
+  const pakker = await getCollection("pakker");
+  return pakker.map((pakke) => ({ params: { slug: pakke.data.slug }, props: { pakke, alle: pakker } }));
+}
+
+const { pakke, alle } = Astro.props;
+const d = pakke.data;
+const { headings } = await render(pakke);
+const seksjoner = headings.filter((h) => h.depth === 2);
+
+// Nedlastingskort settes inn nederst i seksjonen «Materiell og nedlastinger».
+const materiell = d.materiell.map((m) => ({
+  ...m,
+  href: `/materiell/${m.fil}`,
+  info: `${filformat(m.fil)} · ${filstorrelse(statSync(join(process.cwd(), "public/materiell", m.fil)).size)}`,
+}));
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+const kortHtml = materiell.length
+  ? `<ul class="nedlast">${materiell
+      .map(
+        (m) =>
+          `<li><a href="${esc(m.href)}" download><span>${esc(m.tittel)}<small>${esc(m.info)}</small></span>` +
+          `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg></a></li>`,
+      )
+      .join("")}</ul>`
+  : "";
+let html = pakke.rendered?.html ?? "";
+const materiellId = seksjoner.find((h) => h.text === "Materiell og nedlastinger")?.slug;
+if (kortHtml && materiellId) {
+  const start = html.indexOf(`id="${materiellId}"`);
+  const neste = html.indexOf("<h2", start);
+  html = neste === -1 ? html + kortHtml : html.slice(0, neste) + kortHtml + html.slice(neste);
+}
+
+const relaterte = (d.relaterte_pakker ?? [])
+  .map((s) => alle.find((p) => p.data.slug === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+---
+<Base tittel={d.tittel} beskrivelse={d.sammendrag} type="article">
+  <nav class="brodsmuler" aria-label="Brødsmulesti">
+    <div class="wrap">
+      <ol>
+        <li><a href="/">Klyngepakker</a></li>
+        <li aria-current="page">{d.tittel}</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="helt">
+    <div class="wrap">
+      <span class="chip"><span class="sr-only">Fagområde: </span>{d.fagomrade}</span>
+      <h1>{d.tittel}</h1>
+      <p>{d.sammendrag}</p>
+      <dl class="nokkelfakta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <dt>Tidsbruk</dt><dd>{d.tidsbruk}</dd>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><circle cx="12" cy="16" r="3"/></svg>
+          <dt>Antall møter</dt><dd>{moter(d.antall_moter)}</dd>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>
+          <dt>Status</dt><dd>{d.status}</dd>
+        </div>
+        {d.kurspoeng && (
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>
+            <dt>Kurspoeng</dt><dd>{d.kurspoeng}</dd>
+          </div>
+        )}
+      </dl>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="cta-kort">
+      <p>Klyngen melder seg på ved å sende én e-post. Knappene åpner e-postprogrammet ditt med emne og en kort mal ferdig utfylt.</p>
+      <div class="knapper">
+        <a class="knapp fylt" href={meldPa(d.tittel)}>Meld klyngen på denne pakken</a>
+        <a class="knapp omriss" href={merInfo(d.tittel)}>Jeg ønsker mer informasjon</a>
+      </div>
+    </div>
+
+    <div class="pakkeinnhold">
+      <nav class="toc" aria-labelledby="toc-tittel">
+        <h2 id="toc-tittel">På denne siden</h2>
+        <ol>
+          {seksjoner.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+        </ol>
+      </nav>
+
+      <article class="prosa">
+        <Fragment set:html={html} />
+
+        <div class="metadata">
+          <p>{d.kreditering}</p>
+          {d.forfattere?.length && <p>Forfattere: {d.forfattere.join(", ")}</p>}
+          <p>Sist oppdatert {dato(d.sist_oppdatert)}{d.versjon && ` · Versjon ${d.versjon}`}</p>
+        </div>
+
+        {relaterte.length > 0 && (
+          <>
+            <h2>Relaterte pakker</h2>
+            <ul class="relatert">
+              {relaterte.map((r) => (
+                <li><a href={`/pakker/${r.data.slug}/`}>{r.data.tittel}</a> <span class="chip">{r.data.fagomrade}</span></li>
+              ))}
+            </ul>
+          </>
+        )}
+      </article>
+    </div>
+  </div>
+
+  <section class="band" aria-labelledby="band-tittel">
+    <h2 id="band-tittel">Meld interesse eller still spørsmål om denne pakken</h2>
+    <p>Send oss en e-post, så tar vi kontakt. Ingenting lagres på nettsiden.</p>
+    <div class="knapper">
+      <a class="knapp fylt" href={meldPa(d.tittel)}>Meld interesse for denne pakken</a>
+      <a class="knapp omriss" href={merInfo(d.tittel)}>Still et spørsmål</a>
+    </div>
+  </section>
+</Base>

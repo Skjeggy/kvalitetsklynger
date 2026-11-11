@@ -1,0 +1,55 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../../site.config.mjs";
+import { meldPa, merInfo, oppdaterMedlemmer } from "../lib/epost";
+---
+<Base tittel="Kontakt og påmelding" beskrivelse="Meld klyngen på, be om mer informasjon eller oppdater medlemmer – alt via én e-postadresse.">
+  <div class="side">
+    <div class="wrap">
+      <div class="smal">
+        <h1>Kontakt og påmelding</h1>
+        <p class="ingress">
+          Alt går via én e-postadresse: <a href={`mailto:${site.epost}`}>{site.epost}</a>.
+          Knappene under åpner e-postprogrammet ditt med emne og en kort mal ferdig utfylt.
+        </p>
+      </div>
+
+      <ul class="handlinger">
+        <li>
+          <h2>Meld meg på en klynge</h2>
+          <p>For nye klynger, eller når klyngen vil starte på en ny pakke.</p>
+          <a class="knapp fylt" href={meldPa()}>Skriv påmelding</a>
+        </li>
+        <li>
+          <h2>Jeg ønsker mer informasjon</h2>
+          <p>Spørsmål om modellen, en bestemt pakke eller hvordan dere kommer i gang.</p>
+          <a class="knapp omriss" href={merInfo()}>Skriv spørsmål</a>
+        </li>
+        <li>
+          <h2>Oppdater medlemmer i min klynge</h2>
+          <p>Når noen begynner eller slutter i en eksisterende klynge.</p>
+          <a class="knapp omriss" href={oppdaterMedlemmer()}>Skriv oppdatering</a>
+        </li>
+      </ul>
+
+      <div class="smal">
+        <h2>Dette bør stå i e-posten</h2>
+        <ul>
+          <li>Navnet ditt</li>
+          <li>Legekontor og kommune</li>
+          <li>Hvilken pakke dere ønsker (ved påmelding)</li>
+          <li>Klyngens navn, hvis dere allerede er en klynge</li>
+          <li>Ved endringer: hvem som skal legges til eller fjernes</li>
+        </ul>
+        <p>Melder du deg på fra en pakkeside, står pakkenavnet allerede i e-posten.</p>
+
+        <p class="merknad">
+          Ikke send pasientopplysninger på e-post. Nettstedet har ingen skjemaer og lagrer ingen
+          personopplysninger. E-posten går direkte fra ditt e-postprogram.
+        </p>
+
+        <p>Virker ikke knappene? Skriv en vanlig e-post til <a href={`mailto:${site.epost}`}>{site.epost}</a>.</p>
+      </div>
+    </div>
+  </div>
+</Base>

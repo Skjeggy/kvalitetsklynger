@@ -1,0 +1,138 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Pakkekort from "../components/Pakkekort.astro";
+import { fagomrader, statuser } from "../../site.config.mjs";
+import { meldPa, merInfo } from "../lib/epost";
+
+const pakker = (await getCollection("pakker")).sort(
+  (a, b) =>
+    Number(b.data.fremhevet) - Number(a.data.fremhevet) ||
+    b.data.sist_oppdatert.getTime() - a.data.sist_oppdatert.getTime(),
+);
+// Vis bare fagområder som faktisk er i bruk.
+const iBruk = fagomrader.filter((f) => pakker.some((p) => p.data.fagomrade === f));
+---
+<Base>
+  <section class="oversikt" aria-labelledby="tittel">
+    <div class="wrap">
+      <h1 id="tittel">Klyngepakker for allmennpraksis</h1>
+      <p class="ingress">
+        Fastleger møtes i små grupper og bruker en pakke sammen: et ferdig opplegg med faglig innhold,
+        diskusjonsspørsmål og en forbedringsoppgave i egen praksis.{" "}
+        <a href="/slik-fungerer-det/">Slik fungerer en klynge</a>
+      </p>
+
+      <form class="filter" role="search" aria-label="Filtrer pakker" hidden data-filter>
+        <div>
+          <label for="sok">Søk</label>
+          <input id="sok" type="search" placeholder="Søk i tittel og beskrivelse" autocomplete="off" />
+        </div>
+        <div>
+          <label for="fag">Fagområde</label>
+          <select id="fag">
+            <option value="">Alle fagområder</option>
+            {iBruk.map((f) => <option>{f}</option>)}
+          </select>
+        </div>
+        <div>
+          <label for="st">Status</label>
+          <select id="st">
+            <option value="">Alle</option>
+            {statuser.map((s) => <option>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label for="sort">Sorter</label>
+          <select id="sort">
+            <option value="ny">Sist oppdatert først</option>
+            <option value="gml">Eldst først</option>
+            <option value="alfa">Alfabetisk</option>
+          </select>
+        </div>
+      </form>
+      <p class="antall" id="antall" aria-live="polite"></p>
+
+      <h2 class="sr-only">Alle pakker</h2>
+      <ul class="rutenett" id="kort">
+        {pakker.map((p) => <Pakkekort pakke={p} />)}
+      </ul>
+      <p class="ingen" id="ingen" hidden>Ingen pakker passer søket. Prøv et annet fagområde, eller tøm søkefeltet.</p>
+      {pakker.length === 0 && <p class="ingen">Det er ingen pakker publisert ennå.</p>}
+    </div>
+  </section>
+
+  <section class="infofelt" aria-label="Om klyngene">
+    <div class="wrap">
+      <div class="rad">
+        <div>
+          <h2>Slik fungerer en klynge</h2>
+          <p>
+            En klynge er en liten gruppe fastleger som møtes jevnlig. Dere velger en pakke, forbereder dere,
+            diskuterer i gruppen og prøver ut en konkret forbedring i egen praksis mellom møtene.
+          </p>
+          <a href="/slik-fungerer-det/">Les mer om modellen</a>
+        </div>
+        <div class="boks-sand">
+          <h2>Meld på klyngen din</h2>
+          <p>All påmelding og alle spørsmål går via én e-postadresse. Knappene åpner e-postprogrammet ditt med en ferdig mal.</p>
+          <div class="knapper">
+            <a class="knapp fylt" href={meldPa()}>Meld meg på en klynge</a>
+            <a class="knapp omriss" href={merInfo()}>Mer informasjon</a>
+          </div>
+        </div>
+      </div>
+      <p class="partnere">
+        Prosjektet er inspirert av KIAP (Kvalitet i Almen Praksis) i Danmark, og samarbeider med KIAP,
+        SKIL (Senter for kvalitet i legekontor) og Bærekraftig legekontor.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const skjema = document.querySelector<HTMLFormElement>("[data-filter]")!;
+  const liste = document.getElementById("kort")!;
+  const kort = [...liste.children] as HTMLElement[];
+  const sok = document.getElementById("sok") as HTMLInputElement;
+  const fag = document.getElementById("fag") as HTMLSelectElement;
+  const st = document.getElementById("st") as HTMLSelectElement;
+  const sort = document.getElementById("sort") as HTMLSelectElement;
+  const antall = document.getElementById("antall")!;
+  const ingen = document.getElementById("ingen")!;
+
+  function sorter() {
+    const v = sort.value;
+    const fremhevet = (a: HTMLElement, b: HTMLElement) => Number(b.dataset.fremhevet) - Number(a.dataset.fremhevet);
+    kort.sort((a, b) =>
+      v === "alfa"
+        ? a.dataset.tittel!.localeCompare(b.dataset.tittel!, "nb")
+        : fremhevet(a, b) ||
+          (v === "gml" ? a.dataset.dato!.localeCompare(b.dataset.dato!) : b.dataset.dato!.localeCompare(a.dataset.dato!)),
+    );
+    kort.forEach((k) => liste.appendChild(k));
+  }
+
+  function filtrer() {
+    const q = sok.value.trim().toLowerCase();
+    let n = 0;
+    for (const k of kort) {
+      const vis =
+        (!fag.value || k.dataset.fag === fag.value) &&
+        (!st.value || k.dataset.status === st.value) &&
+        (!q || k.dataset.tekst!.includes(q));
+      k.hidden = !vis;
+      if (vis) n++;
+    }
+    antall.textContent = `Viser ${n} av ${kort.length} ${kort.length === 1 ? "pakke" : "pakker"}`;
+    ingen.hidden = n > 0 || kort.length === 0;
+  }
+
+  if (kort.length > 0) {
+    skjema.hidden = false;
+    skjema.addEventListener("submit", (e) => e.preventDefault());
+    [sok, fag, st].forEach((el) => el.addEventListener("input", filtrer));
+    sort.addEventListener("input", sorter);
+    filtrer();
+  }
+</script>

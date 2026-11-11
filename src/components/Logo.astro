@@ -1,0 +1,18 @@
+---
+// Logosymbolet (forslag 2, «Nettverket»). Teksten ved siden av er vanlig HTML.
+interface Props { storrelse?: number; lys?: boolean }
+const { storrelse = 40, lys = false } = Astro.props;
+const farge = lys ? "#FFFFFF" : "var(--primær)";
+const aksent = lys ? "#F2B866" : "var(--aksent)";
+---
+<svg width={storrelse} height={storrelse} viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+  <g stroke={farge} stroke-width="2.2" opacity=".55">
+    <line x1="10" y1="14" x2="26" y2="8"/><line x1="26" y1="8" x2="38" y2="20"/><line x1="38" y1="20" x2="30" y2="36"/>
+    <line x1="30" y1="36" x2="14" y2="32"/><line x1="14" y1="32" x2="10" y2="14"/><line x1="10" y1="14" x2="38" y2="20"/>
+    <line x1="26" y1="8" x2="14" y2="32"/>
+  </g>
+  <g fill={farge}>
+    <circle cx="10" cy="14" r="4.6"/><circle cx="26" cy="8" r="4.6"/><circle cx="30" cy="36" r="4.6"/><circle cx="14" cy="32" r="4.6"/>
+  </g>
+  <circle cx="38" cy="20" r="5.6" fill={aksent}/>
+</svg>

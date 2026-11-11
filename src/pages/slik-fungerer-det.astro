@@ -1,0 +1,46 @@
+---
+import Base from "../layouts/Base.astro";
+import { meldPa } from "../lib/epost";
+---
+<Base tittel="Slik fungerer en klynge" beskrivelse="Om klyngemodellen: fastleger i små grupper som bruker en pakke sammen og forbedrer egen praksis.">
+  <div class="side">
+    <div class="wrap smal">
+      <h1>Slik fungerer en klynge</h1>
+      <p class="ingress">
+        Fastleger møtes i små grupper, klynger, og bruker en klyngepakke sammen. Målet er konkrete
+        kvalitetsforbedringer i egen praksis, gjort i et kollegialt fellesskap.
+      </p>
+
+      <h2>Klyngen</h2>
+      <p>En klynge er en fast gruppe fastleger som møtes jevnlig. [FYLL INN: anbefalt antall deltakere, hvor ofte dere møtes, og om møtene kan være digitale.]</p>
+      <p>Hver klynge har en klyngeleder som holder i møtene og er kontaktperson. [FYLL INN: hva rollen innebærer.]</p>
+
+      <h2>Pakkene</h2>
+      <p>
+        En klyngepakke er et ferdig opplegg for ett eller flere møter. Hver pakke har samme oppbygning:
+        læringsmål, forberedelse, gjennomføring steg for steg med diskusjonsspørsmål, materiell og en
+        forbedringsoppgave i egen praksis.
+      </p>
+
+      <h2>Slik foregår det</h2>
+      <ol>
+        <li><strong>Velg en pakke.</strong> Se <a href="/">oversikten over klyngepakker</a>.</li>
+        <li><strong>Meld klyngen på</strong> med en e-post. Vi tar kontakt og sender materiellet.</li>
+        <li><strong>Forbered dere</strong> etter beskrivelsen i pakken.</li>
+        <li><strong>Møtes og diskuter.</strong> Klyngelederen følger opplegget i pakken.</li>
+        <li><strong>Gjør en forbedring i egen praksis</strong> mellom møtene, og følg opp i klyngen.</li>
+      </ol>
+
+      <h2>Bakgrunn</h2>
+      <p>
+        Modellen er inspirert av KIAP (Kvalitet i Almen Praksis) i Danmark, der klyngearbeid er en fast
+        del av allmennpraksis. Prosjektet samarbeider med KIAP, SKIL (Senter for kvalitet i legekontor)
+        og Bærekraftig legekontor. Noen pakker er basert på deres materiell, og hver pakke oppgir hvor
+        innholdet kommer fra.
+      </p>
+      <p>[FYLL INN: hvem som står bak prosjektet, og eventuell finansiering.]</p>
+
+      <p style="margin-top:2rem"><a class="knapp fylt" href={meldPa()}>Meld klyngen din på</a></p>
+    </div>
+  </div>
+</Base>

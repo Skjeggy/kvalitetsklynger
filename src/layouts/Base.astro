@@ -1,0 +1,84 @@
+---
+import "../styles/global.css";
+import Logo from "../components/Logo.astro";
+import { site } from "../../site.config.mjs";
+import { meldPa } from "../lib/epost";
+
+interface Props {
+  tittel?: string;
+  beskrivelse?: string;
+  type?: "website" | "article";
+}
+const { tittel, beskrivelse = site.beskrivelse, type = "website" } = Astro.props;
+const fullTittel = tittel ? `${tittel} – ${site.navn}` : site.navn;
+const kanonisk = new URL(Astro.url.pathname, Astro.site);
+const ogBilde = new URL("/og.png", Astro.site);
+const sti = Astro.url.pathname;
+const meny = [
+  { href: "/", tekst: "Klyngepakker", aktiv: sti === "/" || sti.startsWith("/pakker/") },
+  { href: "/slik-fungerer-det/", tekst: "Slik fungerer det", aktiv: sti.startsWith("/slik-fungerer-det") },
+  { href: "/kontakt/", tekst: "Kontakt og påmelding", aktiv: sti.startsWith("/kontakt") },
+];
+---
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTittel}</title>
+  <meta name="description" content={beskrivelse} />
+  <link rel="canonical" href={kanonisk} />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <meta name="theme-color" content="#1F4E6E" />
+  <meta property="og:type" content={type} />
+  <meta property="og:locale" content="nb_NO" />
+  <meta property="og:site_name" content={site.navn} />
+  <meta property="og:title" content={tittel ?? site.navn} />
+  <meta property="og:description" content={beskrivelse} />
+  <meta property="og:url" content={kanonisk} />
+  <meta property="og:image" content={ogBilde} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+</head>
+<body>
+  <a class="hopp" href="#innhold">Hopp til innholdet</a>
+  <header class="topp">
+    <div class="wrap">
+      <a class="merke" href="/">
+        <Logo />
+        <span>{site.kortnavn}<small>i allmennpraksis</small></span>
+      </a>
+      <nav class="hovednav" aria-label="Hovedmeny">
+        <ul>
+          {meny.map((m) => (
+            <li><a href={m.href} aria-current={m.aktiv ? "page" : undefined}>{m.tekst}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="innhold" tabindex="-1">
+    <slot />
+  </main>
+  <footer class="bunn">
+    <div class="wrap">
+      <div>
+        <p><strong>{site.navn}</strong></p>
+        <p>Et norsk prosjekt inspirert av KIAP (Danmark), i samarbeid med KIAP, SKIL og Bærekraftig legekontor.</p>
+        <p>Kontakt: <a href={`mailto:${site.epost}`}>{site.epost}</a></p>
+      </div>
+      <nav aria-label="Bunnmeny">
+        <ul>
+          {meny.map((m) => <li><a href={m.href}>{m.tekst}</a></li>)}
+          <li><a href={meldPa()}>Meld klyngen på</a></li>
+        </ul>
+      </nav>
+      <p style="grid-column:1/-1;font-size:.85rem;margin:0">Nettstedet bruker ikke informasjonskapsler (cookies) og samler ikke inn personopplysninger.</p>
+    </div>
+  </footer>
+</body>
+</html>
