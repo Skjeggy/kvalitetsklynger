@@ -7,7 +7,7 @@ export const site = {
     "Fastleger møtes i små grupper, bruker en klyngepakke sammen og gjør konkrete forbedringer i egen praksis.",
 
   // E-postadressen all kontakt og påmelding går til. Byttes kun her.
-  epost: "[E-POSTADRESSE]",
+  epost: "erling.ytrehus@kristiansand.kommune.no",
 
   // Full adresse til nettstedet, uten skråstrek til slutt. Brukes i sidekart,
   // robots.txt og Open Graph. Byttes hvis dere får eget domene.

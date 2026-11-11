@@ -35,7 +35,7 @@ Output-mappen er `dist/`. Den er angitt i `wrangler.jsonc` (`assets.directory`),
 
 ## Gjenstår før publisering
 
-- [ ] E-postadresse: `epost` i `site.config.mjs` (nå `[E-POSTADRESSE]`)
+- [x] E-postadresse satt i `site.config.mjs`
 - [ ] Eget domene (valgfritt): nå brukes `kvalitetsklynger.sondrerekdal.workers.dev`. Ved nytt domene: legg det til i Cloudflare og oppdater `nettadresse` i `site.config.mjs`
 - [ ] Første ekte pakker. Slett deretter `content/pakker/eksempelpakke.md` og `public/materiell/eksempelpakke/`
 - [ ] Fyll inn `[FYLL INN]` på «Slik fungerer det» (gruppestørrelse, møtehyppighet, klyngelederrollen, hvem som står bak)
